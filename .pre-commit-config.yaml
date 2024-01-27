@@ -24,13 +24,6 @@ repos:
         language: python
         types: [python]
 
-    -   id: mypy
-        name: mypy
-        description: mypy
-        entry: mypy
-        language: python
-        types: [python]
-
     -   id: bandit
         name: bandit
         description: bandit

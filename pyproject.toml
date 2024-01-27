@@ -15,9 +15,10 @@ gunicorn = "^21.2.0"
 alembic = "^1.13.1"
 psycopg2 = "^2.9.9"
 asyncpg = "^0.29.0"
-pydantic = "^2.5.3"
+pydantic = {extras = ["email"], version = "^2.5.3"}
 pydantic-settings = "^2.1.0"
 orjson = "^3.9.12"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.25"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -46,7 +47,7 @@ flake8-docstrings = "^1.7.0"
 autopep8 = "^2.0.4"
 pre-commit = "^3.6.0"
 bandit = "^1.7.7"
-mypy = "^1.8.0"
+flake8-type-checking = "^2.8.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -10,3 +10,5 @@ services:
       - "35432:5432"
     env_file:
       - .env.auth-db
+    volumes:
+      - ../../db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
