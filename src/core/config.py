@@ -1,3 +1,4 @@
+# mypy: disable-error-code="assignment"
 import os
 
 from dotenv import load_dotenv

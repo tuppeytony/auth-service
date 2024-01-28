@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 import uvicorn
 
@@ -12,7 +13,7 @@ from db import postgres
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator:
     """Подключение к БД."""
     postgres.async_session = sessionmaker(
         postgres.engine, class_=AsyncSession, expire_on_commit=False,

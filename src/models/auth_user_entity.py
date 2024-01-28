@@ -12,7 +12,7 @@ class AuthUser(Base):
 
     __tablename__ = 'auth_user'
 
-    def __init__(self, email, password):
+    def __init__(self, email: Column[str], password: Column[str]):
         self.email = email
         self.password = password
 
