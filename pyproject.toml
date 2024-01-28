@@ -48,6 +48,7 @@ autopep8 = "^2.0.4"
 pre-commit = "^3.6.0"
 bandit = "^1.7.7"
 mypy = "^1.8.0"
+sqlalchemy = {extras = ["mypy"], version = "^2.0.25"}
 
 [build-system]
 requires = ["poetry-core"]
