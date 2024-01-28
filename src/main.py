@@ -3,11 +3,14 @@ from typing import AsyncGenerator
 
 import uvicorn
 
+from async_fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi import FastAPI
+from fastapi import Request
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+from api.api_v1 import auth
 from core.config import app_settings
 from db import postgres
 
@@ -28,6 +31,18 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     lifespan=lifespan,
 )
+
+
+@app.exception_handler(AuthJWTException)
+def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> ORJSONResponse:
+    """Хэндлер для обработки исключений токенов."""
+    return ORJSONResponse(
+        status_code=exc.status_code,
+        content={'detail': exc.message},
+    )
+
+
+app.include_router(auth.router)
 
 if __name__ == '__main__':
     uvicorn.run(app)
