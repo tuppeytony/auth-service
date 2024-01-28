@@ -20,6 +20,7 @@ orjson = "3.9.12"
 sqlalchemy = {extras = ["asyncio"], version = "2.0.25"}
 fastapi = "<0.101.0"
 async-fastapi-jwt-auth = "0.6.2"
+werkzeug = "3.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

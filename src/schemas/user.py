@@ -14,3 +14,15 @@ class UserLogin(BaseUserEntity):
 
     email: EmailStr
     password: str
+
+
+class UserRegister(UserLogin):
+    """Сущность для регистрации пользователя."""
+
+    pass
+
+
+class UserRestorePassword(BaseUserEntity):
+    """Схема для восстановления пароля."""
+
+    email: EmailStr
