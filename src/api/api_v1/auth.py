@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 
 from core.config import app_settings
+from schemas.token import TokenSchema
 from schemas.user import UserLogin
 from schemas.user import UserRegister
 from schemas.user import UserRestorePassword
@@ -10,49 +11,54 @@ from services.auth_service import AuthService
 from services.auth_service import get_auth_service
 
 
-router = APIRouter(tags=['Аутентификация и регистрация'], prefix=f'{app_settings.api_prefix_url}')
+router = APIRouter(tags=['Аутентификация и регистрация'], prefix=app_settings.api_prefix_url)
 
 
 @router.post(
     '/login',
     description='Аутентификация',
     summary='Аутентификация',
+    response_model=TokenSchema,
 )
 async def login(
     user: UserLogin,
     Authorize: AuthJWT = Depends(),
-) -> None:
+    auth_service: AuthService = Depends(get_auth_service),
+) -> TokenSchema:
     """Аутентифицация пользователя."""
-    ...
+    user_id = await auth_service.login(user)
+    refresh_token = await Authorize.create_refresh_token(subject=user_id)
+    access_token = await Authorize.create_access_token(subject=user_id)
+    return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
 
 @router.post(
     '/registration',
     description='Регистрация',
     summary='Регистрация пользователя',
+    response_model=TokenSchema,
 )
 async def registration(
     user: UserRegister,
     Authorize: AuthJWT = Depends(),
     auth_service: AuthService = Depends(get_auth_service),
-) -> dict[str, str]:
+) -> TokenSchema:
     """Регистрация пользователя."""
     user_id = await auth_service.register(user)
     refresh_token = await Authorize.create_refresh_token(subject=user_id)
     access_token = await Authorize.create_access_token(subject=user_id)
-    await Authorize.set_access_cookies(access_token)
-    await Authorize.set_refresh_cookies(refresh_token)
-    return {'result': user_id}
+    return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
 
 @router.post(
     '/refresh',
     description='Обновление токенов',
     summary='Обновление токенов',
+    response_model=TokenSchema,
 )
 async def refresh_token(
     Authorize: AuthJWT = Depends(),
-) -> None:
+) -> TokenSchema:
     """Обновление токена."""
     ...
 

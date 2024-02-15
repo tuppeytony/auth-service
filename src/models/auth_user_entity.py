@@ -4,12 +4,14 @@ from uuid import uuid4
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
+from sqlalchemy import Date
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
 from .base import Base
@@ -26,8 +28,13 @@ class AuthUser(Base):
 
     auth_user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, unique=True, nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_email_confirmed = Column(Boolean(), nullable=False, default=False)
+    creation_date = Column(Date(), nullable=False, default=datetime.now)
+
+    def check_user_hash_password(self, password: str) -> bool:
+        """Проверка хэша пароля пользователя."""
+        return check_password_hash(self.password, password)
 
 
 class UserSession(Base):
