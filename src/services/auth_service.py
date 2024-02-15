@@ -51,7 +51,7 @@ class AuthService:
         if not auth_user.check_user_hash_password(user.password):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail='Не правильный пароль',
+                detail='Неправильный пароль',
             )
 
 
