@@ -60,7 +60,11 @@ async def refresh_token(
     Authorize: AuthJWT = Depends(),
 ) -> TokenSchema:
     """Обновление токена."""
-    ...
+    Authorize.jwt_refresh_token_required()
+    current_user = await Authorize.get_jwt_subject()
+    new_access_token = await Authorize.create_access_token(subject=current_user)
+    new_refresh_token = await Authorize.create_refresh_token(subject=current_user)
+    return TokenSchema(access_token=new_access_token, refresh_token=new_refresh_token)
 
 
 @router.delete(

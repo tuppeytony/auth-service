@@ -9,7 +9,7 @@ from core.config import db_settings
 
 async_session: Optional[AsyncSession] = None
 dsn = (
-    f'postgresql+asyncpg://{db_settings.user}:{db_settings.password}'
+    f'{db_settings.driver}://{db_settings.user}:{db_settings.password}'
     f'@{db_settings.host}:{db_settings.port}/{db_settings.name}'
 )
 engine = create_async_engine(dsn, echo=app_settings.debug, future=True)

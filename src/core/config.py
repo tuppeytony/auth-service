@@ -1,6 +1,7 @@
 # mypy: disable-error-code="assignment"
 import os
 
+from datetime import timedelta
 from functools import lru_cache
 
 from async_fastapi_jwt_auth import AuthJWT
@@ -44,8 +45,10 @@ class AuthJWTSettings(BaseSettings):
 
     model_config = SettingsConfigDict(case_sensitive=False, env_prefix='JWT_')
 
-    authjwt_secret_key: str
+    authjwt_secret_key: str = ...
     authjwt_token_location: set[str]
+    authjwt_access_token_expires: int = 15
+    authjwt_refresh_token_expires: timedelta = timedelta(days=30)
 
 
 @AuthJWT.load_config

@@ -10,6 +10,7 @@ from fastapi.responses import ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+from api import healthcheck
 from api.api_v1 import auth
 from core.config import app_settings
 from db import postgres
@@ -43,6 +44,7 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> ORJSON
 
 
 app.include_router(auth.router)
+app.include_router(healthcheck.router)
 
 if __name__ == '__main__':
     uvicorn.run(app)

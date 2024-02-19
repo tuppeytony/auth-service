@@ -153,3 +153,6 @@ dmypy.json
 cython_debug/
 
 .vscode
+nginx.env
+.env.auth-db
+poetry.lock

@@ -1,6 +1,6 @@
 # Сервис аутентификации
 
-## Рарворачивание проекта для разработки
+## Разворачивание проекта для разработки
 
 - установка зависимостей
     - `poetry install`
@@ -21,3 +21,10 @@
     - `alembic revision --autogenerate -m "<название миграции>"`
 - применение миграции
     - `alembic upgrade head`
+
+
+### Запуск демо проекта
+
+- перейти в директорию `cd ci/demo`
+- запустить сборку docker-compose
+    - `docker-compose -p auth-service-demo --env-file ./demo-db.env up`

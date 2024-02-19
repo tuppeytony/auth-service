@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["tuppey_tony <miro_19@mail.ru>"]
 readme = "README.md"
-packages = [{include = "auth_service"}]
 
 [tool.poetry.dependencies]
 python = "3.11.*"
