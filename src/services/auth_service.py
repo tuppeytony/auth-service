@@ -56,6 +56,8 @@ class AuthService:
 
 
 @lru_cache
-def get_auth_service(session: AsyncSession = Depends(get_session)) -> AuthService:
+def get_auth_service(
+    session: AsyncSession = Depends(get_session),
+) -> AuthService:
     """Получение сервиса аутентификаций."""
     return AuthService(session)

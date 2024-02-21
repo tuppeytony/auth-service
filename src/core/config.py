@@ -49,6 +49,7 @@ class AuthJWTSettings(BaseSettings):
     authjwt_token_location: set[str]
     authjwt_access_token_expires: int = 15
     authjwt_refresh_token_expires: timedelta = timedelta(days=30)
+    authjwt_cookie_csrf_protect: bool = True
 
 
 @AuthJWT.load_config

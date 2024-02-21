@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from typing import Optional
 from uuid import uuid4
@@ -30,24 +31,34 @@ class AuthUser(Base):
     email = Column(String(100), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_email_confirmed = Column(Boolean(), nullable=False, default=False)
-    creation_date = Column(Date(), nullable=False, default=datetime.now)
+    creation_date = Column(Date(), nullable=False, default=date.today)
 
     def check_user_hash_password(self, password: str) -> bool:
         """Проверка хэша пароля пользователя."""
         return check_password_hash(self.password, password)
 
 
+# TODO: добавить ip адреса пользователей, user agent
 class UserSession(Base):
     """Модель сессий пользователя."""
 
     __tablename__ = 'user_session'
 
-    def __init__(self, login_time: Optional[datetime], logout_time: Optional[datetime], auth_user_id: UUID):
-        self.login_time = login_time
-        self.logout_time = logout_time
+    def __init__(
+        self,
+        auth_user_id: UUID,
+        logout_time: Optional[datetime] = None,
+    ):
         self.auth_user_id = auth_user_id
+        self.logout_time = logout_time
 
-    session_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, unique=True, nullable=False)
-    login_time = Column(DateTime(), default=datetime.now)
+    session_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid4,
+        unique=True,
+        nullable=False,
+    )
+    login_time = Column(DateTime(), default=datetime.now, nullable=False)
     logout_time = Column(DateTime(), nullable=True)
     auth_user_id: Mapped[UUID] = mapped_column(ForeignKey('auth_user.auth_user_id', ondelete='CASCADE'), nullable=False)

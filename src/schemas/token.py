@@ -1,11 +1,8 @@
-from pydantic import BaseModel
-from pydantic import ConfigDict
+from schemas import BaseSchema
 
 
-class TokenSchema(BaseModel):
+class TokenSchema(BaseSchema):
     """Схема для токена."""
-
-    model_config = ConfigDict(from_attributes=True)
 
     access_token: str
     refresh_token: str

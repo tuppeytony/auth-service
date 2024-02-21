@@ -9,6 +9,8 @@ from schemas.user import UserRegister
 from schemas.user import UserRestorePassword
 from services.auth_service import AuthService
 from services.auth_service import get_auth_service
+from services.user_session_service import UserSessionService
+from services.user_session_service import get_user_session_service
 
 
 router = APIRouter(tags=['Аутентификация и регистрация'], prefix=app_settings.api_prefix_url)
@@ -24,11 +26,15 @@ async def login(
     user: UserLogin,
     Authorize: AuthJWT = Depends(),
     auth_service: AuthService = Depends(get_auth_service),
+    user_session_service: UserSessionService = Depends(get_user_session_service),
 ) -> TokenSchema:
     """Аутентифицация пользователя."""
     user_id = await auth_service.login(user)
+    await user_session_service.set_login_time(user_id)
     refresh_token = await Authorize.create_refresh_token(subject=user_id)
     access_token = await Authorize.create_access_token(subject=user_id)
+    await Authorize.set_access_cookies(access_token)
+    await Authorize.set_refresh_cookies(refresh_token)
     return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -42,11 +48,15 @@ async def registration(
     user: UserRegister,
     Authorize: AuthJWT = Depends(),
     auth_service: AuthService = Depends(get_auth_service),
+    user_session_service: UserSessionService = Depends(get_user_session_service),
 ) -> TokenSchema:
     """Регистрация пользователя."""
     user_id = await auth_service.register(user)
+    await user_session_service.set_login_time(user_id)
     refresh_token = await Authorize.create_refresh_token(subject=user_id)
     access_token = await Authorize.create_access_token(subject=user_id)
+    await Authorize.set_access_cookies(access_token)
+    await Authorize.set_refresh_cookies(refresh_token)
     return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -60,10 +70,11 @@ async def refresh_token(
     Authorize: AuthJWT = Depends(),
 ) -> TokenSchema:
     """Обновление токена."""
-    Authorize.jwt_refresh_token_required()
+    await Authorize.jwt_refresh_token_required()
     current_user = await Authorize.get_jwt_subject()
     new_access_token = await Authorize.create_access_token(subject=current_user)
     new_refresh_token = await Authorize.create_refresh_token(subject=current_user)
+    await Authorize.set_access_cookies(new_access_token)
     return TokenSchema(access_token=new_access_token, refresh_token=new_refresh_token)
 
 
@@ -74,9 +85,13 @@ async def refresh_token(
 )
 async def logout(
     Authorize: AuthJWT = Depends(),
+    user_session_service: UserSessionService = Depends(get_user_session_service),
 ) -> None:
     """Логаут пользователя."""
-    ...
+    await Authorize.jwt_required()
+    user_id = await Authorize.get_jwt_subject()
+    await user_session_service.set_logout_time(user_id)
+    await Authorize.unset_jwt_cookies()
 
 
 @router.post(

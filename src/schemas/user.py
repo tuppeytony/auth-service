@@ -1,15 +1,9 @@
-from pydantic import BaseModel
-from pydantic import ConfigDict
 from pydantic import EmailStr
 
-
-class BaseUserEntity(BaseModel):
-    """Базовая сущность для пользователя."""
-
-    model_config = ConfigDict(from_attributes=True)
+from schemas import BaseSchema
 
 
-class UserLogin(BaseUserEntity):
+class UserLogin(BaseSchema):
     """Сущность для аутентификации пользователя."""
 
     email: EmailStr
@@ -22,7 +16,7 @@ class UserRegister(UserLogin):
     pass
 
 
-class UserRestorePassword(BaseUserEntity):
+class UserRestorePassword(BaseSchema):
     """Схема для восстановления пароля."""
 
     email: EmailStr

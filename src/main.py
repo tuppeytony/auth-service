@@ -12,6 +12,7 @@ from sqlalchemy.orm import sessionmaker
 
 from api import healthcheck
 from api.api_v1 import auth
+from api.api_v1 import user_session
 from core.config import app_settings
 from db import postgres
 
@@ -45,6 +46,7 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> ORJSON
 
 app.include_router(auth.router)
 app.include_router(healthcheck.router)
+app.include_router(user_session.router)
 
 if __name__ == '__main__':
     uvicorn.run(app)
