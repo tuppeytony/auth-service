@@ -37,3 +37,17 @@ repos:
         entry: bandit
         language: python
         types: [python]
+
+    -   id: poetry-check
+        name: poetry-check
+        description: check lock file
+        entry: poetry
+        language: python
+        types: [python]
+
+    -   id: poetry-lock
+        name: poetry-lock
+        description: lock poetryt lock file
+        entry: poetry
+        language: python
+        types: [python]
