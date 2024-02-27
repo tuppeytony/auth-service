@@ -24,7 +24,7 @@ class AppSettings(BaseSettings):
     openapi_url: str = '/api/openapi.json'
     log_level: str = ...
     bases_dir: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    debug: bool = True
+    debug: bool = False
 
 
 class DataBaseSettings(BaseSettings):

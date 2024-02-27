@@ -14,3 +14,5 @@ class UserSessionSchema(BaseSchema):
     email: EmailStr
     is_email_confirmed: bool
     creation_date: date
+    user_agent: str | None
+    ip_address: str

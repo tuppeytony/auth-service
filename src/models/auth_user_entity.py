@@ -32,6 +32,7 @@ class AuthUser(Base):
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_email_confirmed = Column(Boolean(), nullable=False, default=False)
     creation_date = Column(Date(), nullable=False, default=date.today)
+    user_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
 
     def check_user_hash_password(self, password: str) -> bool:
         """Проверка хэша пароля пользователя."""
@@ -48,9 +49,13 @@ class UserSession(Base):
         self,
         auth_user_id: UUID,
         logout_time: Optional[datetime] = None,
+        user_agent: Optional[str] = None,
+        ip_address: Optional[str] = None,
     ):
         self.auth_user_id = auth_user_id
         self.logout_time = logout_time
+        self.user_agent = user_agent
+        self.ip_address = ip_address
 
     session_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -62,3 +67,5 @@ class UserSession(Base):
     login_time = Column(DateTime(), default=datetime.now, nullable=False)
     logout_time = Column(DateTime(), nullable=True)
     auth_user_id: Mapped[UUID] = mapped_column(ForeignKey('auth_user.auth_user_id', ondelete='CASCADE'), nullable=False)
+    user_agent: Mapped[Optional[str]] = mapped_column(String(400), nullable=False)
+    ip_address: Mapped[Optional[str]] = mapped_column(String(15), nullable=False)

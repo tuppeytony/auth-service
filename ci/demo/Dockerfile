@@ -1,8 +1,12 @@
 FROM python:3.11
 
-WORKDIR /opt/app
+ARG WORD_DIR_PATH=/opt/app
 
-COPY pyproject.toml pyproject.toml
+WORKDIR ${WORD_DIR_PATH}
+
+COPY pyproject.toml ${WORD_DIR_PATH}/pyproject.toml
+
+COPY poetry.lock ${WORD_DIR_PATH}/poetry.lock
 
 RUN pip install --upgrade pip \
     && pip install poetry \
@@ -11,4 +15,4 @@ RUN pip install --upgrade pip \
 
 COPY . .
 
-ENTRYPOINT alembic upgrade head && gunicorn main:app -w 4 -k uvicorn.workers.UvicornH11Worker --bind=0.0.0.0:8000
+ENTRYPOINT alembic upgrade head && gunicorn main:app -w 4 -k uvicorn.workers.UvicornH11Worker --bind=0.0.0.0:8000 --proxy-headers

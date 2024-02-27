@@ -1,8 +1,8 @@
-"""create models
+"""create tables
 
-Revision ID: bdda5d322107
+Revision ID: 0a13c54fb70f
 Revises: 
-Create Date: 2024-02-20 23:50:46.677818
+Create Date: 2024-02-26 22:22:37.690396
 
 """
 from typing import Sequence
@@ -14,7 +14,7 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bdda5d322107'
+revision: str = '0a13c54fb70f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,6 +28,7 @@ def upgrade() -> None:
     sa.Column('password', sa.String(length=255), nullable=False),
     sa.Column('is_email_confirmed', sa.Boolean(), nullable=False),
     sa.Column('creation_date', sa.Date(), nullable=False),
+    sa.Column('user_enabled', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('auth_user_id'),
     sa.UniqueConstraint('auth_user_id'),
     sa.UniqueConstraint('email'),
@@ -38,6 +39,8 @@ def upgrade() -> None:
     sa.Column('login_time', sa.DateTime(), nullable=False),
     sa.Column('logout_time', sa.DateTime(), nullable=True),
     sa.Column('auth_user_id', sa.UUID(), nullable=False),
+    sa.Column('user_agent', sa.String(length=400), nullable=False),
+    sa.Column('ip_address', sa.String(length=15), nullable=False),
     sa.ForeignKeyConstraint(['auth_user_id'], ['auth_service.auth_user.auth_user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('session_id'),
     sa.UniqueConstraint('session_id'),

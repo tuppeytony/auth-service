@@ -18,7 +18,7 @@ from db import postgres
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator:
+async def lifespan(app: FastAPI) -> AsyncGenerator:  # noqa: U100
     """Подключение к БД."""
     postgres.async_session = sessionmaker(
         postgres.engine, class_=AsyncSession, expire_on_commit=False,
@@ -32,11 +32,12 @@ app = FastAPI(
     openapi_url=app_settings.openapi_url,
     default_response_class=ORJSONResponse,
     lifespan=lifespan,
+    debug=app_settings.debug,
 )
 
 
 @app.exception_handler(AuthJWTException)
-def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> ORJSONResponse:
+def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> ORJSONResponse:  # noqa: U100
     """Хэндлер для обработки исключений токенов."""
     return ORJSONResponse(
         status_code=exc.status_code,
