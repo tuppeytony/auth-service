@@ -8,7 +8,8 @@ import pytest
 
 pytest_plugins = (
     'tests.functional.project_fixtures.db_fixtures',
-    'tests.functional.project_fixtures.request_fixtures',
+    'tests.functional.project_fixtures.registration_fixtures',
+    'tests.functional.project_fixtures.client_fixtures',
 )
 
 

@@ -21,7 +21,10 @@
     - `alembic revision --autogenerate -m "<название миграции>"`
 - применение миграции
     - `alembic upgrade head`
-
+- проверка покрытия тестами
+    - `dotenv -f src/core/.env run -- pytest --cov=src`
+- проверка покрытия тестами c html отчетом
+    - `dotenv -f src/core/.env run -- pytest --cov=src --cov-report=html`
 
 ### Запуск демо проекта
 

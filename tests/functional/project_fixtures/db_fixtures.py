@@ -1,7 +1,7 @@
 from typing import AsyncGenerator
 from typing import Optional
 
-import pytest
+import pytest_asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -29,7 +29,7 @@ async def override_get_session() -> AsyncSession:  # type: ignore
 app.dependency_overrides[get_session] = override_get_session
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest_asyncio.fixture(autouse=True, scope='session')
 async def _prepare_db() -> AsyncGenerator:
     """Подготовка БД для тестов."""
     async with engine_test.begin() as conn:
