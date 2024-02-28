@@ -23,15 +23,21 @@ class AuthUser(Base):
 
     __tablename__ = 'auth_user'
 
-    def __init__(self, email: Column[str], password: str):
+    def __init__(self, email: str, password: str):
         self.email = email
         self.password = generate_password_hash(password)
 
-    auth_user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4, unique=True, nullable=False)
-    email = Column(String(100), nullable=False, unique=True)
+    auth_user_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid4,
+        unique=True,
+        nullable=False,
+    )
+    email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
-    is_email_confirmed = Column(Boolean(), nullable=False, default=False)
-    creation_date = Column(Date(), nullable=False, default=date.today)
+    is_email_confirmed: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
+    creation_date: Mapped[date] = mapped_column(Date(), nullable=False, default=date.today)
     user_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
 
     def check_user_hash_password(self, password: str) -> bool:

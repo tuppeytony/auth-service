@@ -8,6 +8,9 @@
 - установка гит хуков
     - `pre-commit install`
 
+- запустить докер компоуз для локальной разработки
+    - `docker-compose -p auth-service -f ci/local/docker-compose.yaml up -d`
+
 - запуск проекта для разработки
     - перейти в scr `cd ./src`
     - запустить сервер `uvicorn main:app --reload`

@@ -26,7 +26,7 @@ class FunctioalTestSettings(BaseSettings):
     @property
     def service_api_url(self) -> str:
         """URL сервиса."""
-        return f'{self.service_url}/{self.api_version}'
+        return f'{self.service_url}/api/{self.api_version}'
 
 
 tests_settings = FunctioalTestSettings()

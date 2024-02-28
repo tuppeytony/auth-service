@@ -41,7 +41,7 @@ async def login(
 ) -> TokenSchema:
     """Аутентифицация пользователя."""
     user_id = await auth_service.login(user)
-    await user_session_service.set_login_time(user_id, user_agent, request)
+    await user_session_service.logging_start_session(user_id, user_agent, request)
     refresh_token = await Authorize.create_refresh_token(subject=user_id)
     access_token = await Authorize.create_access_token(subject=user_id)
     await Authorize.set_access_cookies(access_token)
