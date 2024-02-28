@@ -31,6 +31,5 @@
 
 ### Запуск демо проекта
 
-- перейти в директорию `cd ci/demo`
 - запустить сборку docker-compose
-    - `docker-compose -p auth-service-demo --env-file ./demo-db.env up`
+    - `docker-compose -p auth-service-demo -f ./ci/demo/docker-compose.yaml --env-file ./ci/demo/demo-db.env up`
