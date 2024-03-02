@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from src.db.postgres import get_session
 from src.main import app
-from src.models import AuthUser
+from src.models import AuthUserModel
 from src.models import Base
 from tests.functional.settings import tests_settings
 from tests.functional.testdata.database_mapping import database_data
@@ -38,7 +38,7 @@ async def _prepare_db() -> AsyncGenerator:
         await conn.run_sync(Base.metadata.create_all)
     async with AsyncSession(engine_test) as session:
         async with session.begin():
-            session.add_all([AuthUser(**user) for user in database_data])
+            session.add_all([AuthUserModel(**user) for user in database_data])
         await session.commit()
     yield
     async with engine_test.begin() as conn:

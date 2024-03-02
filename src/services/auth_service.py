@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.postgres import get_session
-from models.auth_user_entity import AuthUser
+from models import AuthUserModel
 from schemas.user import UserRegister
 
 
@@ -21,7 +21,7 @@ class AuthService:
     async def register(self, user: UserRegister) -> str:
         """Регистрация пользователя."""
         try:
-            new_user = AuthUser(**user.model_dump())
+            new_user = AuthUserModel(**user.model_dump())
             self.session.add(new_user)
             await self.session.commit()
             await self.session.refresh(new_user)
@@ -35,7 +35,7 @@ class AuthService:
 
     async def login(self, user: UserRegister) -> str:
         """Вход пользователя в систему."""
-        stmt = select(AuthUser).where(AuthUser.email == user.email)
+        stmt = select(AuthUserModel).where(AuthUserModel.email == user.email)
         result = await self.session.execute(stmt)
         auth_user = result.scalar_one_or_none()
         if not auth_user:
@@ -46,7 +46,7 @@ class AuthService:
         self.__validate_user(auth_user, user)
         return str(auth_user.auth_user_id)
 
-    def __validate_user(self, auth_user: AuthUser, user: UserRegister) -> None:
+    def __validate_user(self, auth_user: AuthUserModel, user: UserRegister) -> None:
         """Проверка пользователя при входе."""
         if not auth_user.check_user_hash_password(user.password):
             raise HTTPException(

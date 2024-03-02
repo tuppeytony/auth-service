@@ -21,7 +21,6 @@ from services.user_session_service import get_user_session_service
 router = APIRouter(tags=['Аутентификация и регистрация'], prefix=app_settings.api_prefix_url)
 
 
-# TODO: получать user agent
 @router.post(
     '/login',
     description='Аутентификация',
@@ -49,7 +48,6 @@ async def login(
     return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
 
-# TODO: получать user agent
 @router.post(
     '/registration',
     description='Регистрация',
