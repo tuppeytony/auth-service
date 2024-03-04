@@ -4,6 +4,7 @@ from uuid import UUID
 from async_fastapi_jwt_auth import AuthJWT
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import Path
 from fastapi import Query
 
 from core.config import app_settings
@@ -41,7 +42,7 @@ async def users_activities(
     response_model=list[UserSessionSchema],
 )
 async def user_activities(
-    user_id: UUID,
+    user_id: Annotated[UUID, Path(description='id пользователя')],
     Authorize: AuthJWT = Depends(),
     user_session_service: UserSessionService = Depends(get_user_session_service),
     pagination: Paginator = Depends(Paginator),

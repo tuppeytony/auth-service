@@ -65,14 +65,30 @@ class UserSessionService:
         result = await self.session.execute(stmt)
         return [UserSessionSchema.model_validate(user) for user in result.all()]
 
-    async def user_activities(  # type: ignore [empty-body]
+    async def user_activities(
         self,
-        pagination: Paginator,  # noqa: U100
+        pagination: Paginator,
         ordering: str,  # noqa: U100
-        user_id: UUID,  # noqa: U100
+        user_id: UUID,
     ) -> list[UserSessionSchema]:
         """Просмотр активности пользователя."""
-        ...
+        stmt = select(
+            UserSessionModel.login_time,
+            UserSessionModel.logout_time,
+            UserSessionModel.user_agent,
+            UserSessionModel.ip_address,
+            AuthUserModel.creation_date,
+            AuthUserModel.email,
+            AuthUserModel.is_email_confirmed,
+        ).join_from(
+            UserSessionModel,
+            AuthUserModel,
+            UserSessionModel.auth_user_id == AuthUserModel.auth_user_id,
+        ).where(AuthUserModel.auth_user_id == user_id).order_by(
+            AuthUserModel.email,
+        ).limit(pagination.limit).offset(pagination.offset)
+        result = await self.session.execute(stmt)
+        return [UserSessionSchema.model_validate(user) for user in result.all()]
 
 
 @lru_cache

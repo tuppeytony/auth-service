@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Sequence
 from uuid import UUID
 
 from fastapi import Depends
@@ -10,13 +11,16 @@ from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from db.postgres import get_session
+from models import AuthUserModel
 from models import RoleModel
 from schemas import CreateRoleSchema
 from schemas import RolesSchema
 from schemas import SetUserRoleSchema
 from schemas import UpdateRoleSchema
+from schemas import UserRolesSchema
 from utils.pagination import Paginator
 
 
@@ -92,9 +96,45 @@ class RoleService:
         await self.session.execute(stmp)
         await self.session.commit()
 
-    async def set_user_role(self, user_role: SetUserRoleSchema) -> None:  # noqa: U100
+    async def user_roles(self, user_id: UUID) -> list[UserRolesSchema]:
+        """Получение ролей пользователя."""
+        stmp = select(AuthUserModel).options(
+            selectinload(AuthUserModel.roles),
+        ).where(
+            AuthUserModel.auth_user_id == user_id,
+        ).order_by(AuthUserModel.auth_user_id)
+        result = await self.session.execute(stmp)
+        user_roles = result.scalars().all()
+        return [UserRolesSchema.model_validate(i) for i in user_roles]
+
+    # TODO: доразобраться с логикой добавления ролей
+    async def set_user_role(self, user_role: SetUserRoleSchema) -> None:
         """Установка ролей пользователю."""
-        ...
+        roles: list | Sequence[RoleModel] = []
+        user_stmp = select(AuthUserModel).where(
+            AuthUserModel.auth_user_id == user_role.user_id,
+        ).options(selectinload(AuthUserModel.roles))
+        user_result = await self.session.execute(user_stmp)
+        user = user_result.scalar_one_or_none()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Такого пользователя не существует',
+            )
+        if user_role.roles_id:
+            roles_stmp = select(RoleModel).where(
+                RoleModel.role_id.in_(user_role.roles_id),
+            )
+            roles_result = await self.session.execute(roles_stmp)
+            roles = roles_result.scalars().all()
+            if not roles:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Таких ролей нет',
+                )
+        if user.roles != roles:
+            user.roles = roles
+            await self.session.commit()
 
 
 @lru_cache

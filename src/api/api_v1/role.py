@@ -11,6 +11,7 @@ from schemas import CreateRoleSchema
 from schemas import RolesSchema
 from schemas import SetUserRoleSchema
 from schemas import UpdateRoleSchema
+from schemas import UserRolesSchema
 from services.role_service import RoleService
 from services.role_service import get_role_service
 from utils.pagination import Paginator
@@ -43,7 +44,7 @@ async def roles(
     response_model=RolesSchema,
 )
 async def retrive_role(
-    role_id: Annotated[UUID, Path()],
+    role_id: Annotated[UUID, Path(description='id роли')],
     role_service: RoleService = Depends(get_role_service),
     Authorize: AuthJWT = Depends(),
 ) -> RolesSchema:
@@ -76,7 +77,7 @@ async def create_role(
     summary='Удаление роли',
 )
 async def delete_role(
-    role_id: Annotated[UUID, Path()],
+    role_id: Annotated[UUID, Path(description='id пользователя')],
     role_service: RoleService = Depends(get_role_service),
     Authorize: AuthJWT = Depends(),
 ) -> dict:
@@ -93,7 +94,7 @@ async def delete_role(
     response_model=RolesSchema,
 )
 async def update_role(
-    role_id: Annotated[UUID, Path()],
+    role_id: Annotated[UUID, Path(description='id роли')],
     role: UpdateRoleSchema,
     role_service: RoleService = Depends(get_role_service),
     Authorize: AuthJWT = Depends(),
@@ -118,3 +119,20 @@ async def set_user_role(
     await Authorize.jwt_required()
     await role_service.set_user_role(user_role)
     return {'status': 'ok'}
+
+
+@router.get(
+    '/user-roles/{user_id}',
+    description='Просмотр назначенных ролей пользователю',
+    summary='Просмотр назначенных ролей пользователю',
+    response_model=list[UserRolesSchema],
+)
+async def user_roles(
+    user_id: Annotated[UUID, Path(description='id пользователя')],
+    Authorize: AuthJWT = Depends(),
+    role_service: RoleService = Depends(get_role_service),
+) -> list[UserRolesSchema]:
+    """Получение ролей пользователя."""
+    Authorize.jwt_required()
+    user_roles = await role_service.user_roles(user_id)
+    return user_roles
