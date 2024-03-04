@@ -7,7 +7,7 @@ from fastapi import Depends
 from fastapi import Query
 
 from core.config import app_settings
-from schemas.user_session import UserSessionSchema
+from schemas import UserSessionSchema
 from services.user_session_service import UserSessionService
 from services.user_session_service import get_user_session_service
 from utils.pagination import Paginator

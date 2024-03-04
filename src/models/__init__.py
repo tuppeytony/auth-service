@@ -5,7 +5,6 @@ __all__ = (
     'RoleModel',
     'RoleAuthUserAssociation',
 )
-
 from .auth_user import AuthUserModel
 from .base import Base
 from .role import RoleModel

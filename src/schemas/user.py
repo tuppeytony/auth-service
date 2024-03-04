@@ -1,22 +1,22 @@
 from pydantic import EmailStr
 
-from schemas import BaseSchema
+from .base_schema import BaseSchema
 
 
-class UserLogin(BaseSchema):
+class UserLoginSchema(BaseSchema):
     """Сущность для аутентификации пользователя."""
 
     email: EmailStr
     password: str
 
 
-class UserRegister(UserLogin):
+class UserRegisterSchema(UserLoginSchema):
     """Сущность для регистрации пользователя."""
 
     pass
 
 
-class UserRestorePassword(BaseSchema):
+class UserRestorePasswordSchema(BaseSchema):
     """Схема для восстановления пароля."""
 
     email: EmailStr

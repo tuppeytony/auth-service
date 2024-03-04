@@ -1,4 +1,4 @@
-from schemas import BaseSchema
+from .base_schema import BaseSchema
 
 
 class TokenSchema(BaseSchema):

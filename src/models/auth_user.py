@@ -19,30 +19,32 @@ if TYPE_CHECKING:
     from .role import RoleModel
 
 
+# TODO: добавить server_default
 class AuthUserModel(Base):
     """Таблица аутентификационного пользователя."""
 
     __tablename__ = 'auth_user'
 
-    def __init__(self, email: str, password: str):
+    def __init__(self, email: str, password: str, user_enabled: bool = True, is_email_confirmed: bool = False):
         self.email = email
         self.password = generate_password_hash(password)
+        self.user_enabled = user_enabled
+        self.is_email_confirmed = is_email_confirmed
 
     auth_user_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         default=uuid4,
-        unique=True,
-        nullable=False,
     )
-    email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
-    is_email_confirmed: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=False)
-    creation_date: Mapped[date] = mapped_column(Date(), nullable=False, default=date.today)
-    user_enabled: Mapped[bool] = mapped_column(default=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(100), unique=True)
+    password: Mapped[str] = mapped_column(String(255))
+    is_email_confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
+    creation_date: Mapped[date] = mapped_column(Date, default=date.today)
+    user_enabled: Mapped[bool] = mapped_column(default=True)
+    # при связях M2M и использовании другой схемы, нужно ее явно прописывать в secondary
     roles: Mapped[list['RoleModel']] = relationship(
-        secondary='role',
-        back_populates='role_id',
+        secondary='auth_service.role_auth_user_association',
+        back_populates='auth_users',
     )
 
     def check_user_hash_password(self, password: str) -> bool:

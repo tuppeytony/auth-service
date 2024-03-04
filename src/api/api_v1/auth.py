@@ -8,10 +8,10 @@ from fastapi import Request
 from fastapi import status
 
 from core.config import app_settings
-from schemas.token import TokenSchema
-from schemas.user import UserLogin
-from schemas.user import UserRegister
-from schemas.user import UserRestorePassword
+from schemas import TokenSchema
+from schemas import UserLoginSchema
+from schemas import UserRegisterSchema
+from schemas import UserRestorePasswordSchema
 from services.auth_service import AuthService
 from services.auth_service import get_auth_service
 from services.user_session_service import UserSessionService
@@ -28,7 +28,7 @@ router = APIRouter(tags=['Аутентификация и регистрация
     response_model=TokenSchema,
 )
 async def login(
-    user: UserLogin,
+    user: UserLoginSchema,
     request: Request,
     user_agent: Annotated[str | None, Header(
         examples=['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -56,7 +56,7 @@ async def login(
     status_code=status.HTTP_201_CREATED,
 )
 async def registration(
-    user: UserRegister,
+    user: UserRegisterSchema,
     request: Request,
     user_agent: Annotated[str | None, Header(
         examples=['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -116,7 +116,7 @@ async def logout(
     summary='Восстановление пароля',
 )
 async def restore_password(
-    user_email: UserRestorePassword,  # noqa: U100
+    user_email: UserRestorePasswordSchema,  # noqa: U100
 ) -> None:
     """Восстановление пароля."""
     ...

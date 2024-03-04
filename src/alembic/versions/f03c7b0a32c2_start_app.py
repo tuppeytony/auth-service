@@ -1,8 +1,8 @@
 """start_app
 
-Revision ID: 64059d339fe9
+Revision ID: f03c7b0a32c2
 Revises: 
-Create Date: 2024-03-02 22:06:18.945673
+Create Date: 2024-03-04 17:43:42.632127
 
 """
 from typing import Sequence
@@ -14,7 +14,7 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision: str = '64059d339fe9'
+revision: str = 'f03c7b0a32c2'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +30,6 @@ def upgrade() -> None:
     sa.Column('creation_date', sa.Date(), nullable=False),
     sa.Column('user_enabled', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('auth_user_id'),
-    sa.UniqueConstraint('auth_user_id'),
     sa.UniqueConstraint('email'),
     schema='auth_service'
     )
@@ -38,7 +37,6 @@ def upgrade() -> None:
     sa.Column('role_id', sa.UUID(), nullable=False),
     sa.Column('role_name', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('role_id'),
-    sa.UniqueConstraint('role_id'),
     sa.UniqueConstraint('role_name'),
     schema='auth_service'
     )
@@ -50,19 +48,17 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['role_id'], ['auth_service.role.role_id'], ),
     sa.PrimaryKeyConstraint('role_auth_user_association_id'),
     sa.UniqueConstraint('auth_user_id', 'role_id', name='idx_unique_auth_user_id_role_id'),
-    sa.UniqueConstraint('role_auth_user_association_id'),
     schema='auth_service'
     )
     op.create_table('user_session',
     sa.Column('session_id', sa.UUID(), nullable=False),
-    sa.Column('login_time', sa.DateTime(), nullable=False),
+    sa.Column('login_time', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('logout_time', sa.DateTime(), nullable=True),
     sa.Column('auth_user_id', sa.UUID(), nullable=False),
-    sa.Column('user_agent', sa.String(length=400), nullable=False),
-    sa.Column('ip_address', sa.String(length=15), nullable=False),
+    sa.Column('user_agent', sa.String(length=400), nullable=True),
+    sa.Column('ip_address', sa.String(length=15), nullable=True),
     sa.ForeignKeyConstraint(['auth_user_id'], ['auth_service.auth_user.auth_user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('session_id'),
-    sa.UniqueConstraint('session_id'),
     schema='auth_service'
     )
     # ### end Alembic commands ###

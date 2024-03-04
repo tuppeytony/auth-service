@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.postgres import get_session
 from models import AuthUserModel
 from models import UserSessionModel
-from schemas.user_session import UserSessionSchema
+from schemas import UserSessionSchema
 from utils.pagination import Paginator
 
 

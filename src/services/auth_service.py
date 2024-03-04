@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.postgres import get_session
 from models import AuthUserModel
-from schemas.user import UserRegister
+from schemas import UserRegisterSchema
 
 
 class AuthService:
@@ -18,7 +18,7 @@ class AuthService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def register(self, user: UserRegister) -> str:
+    async def register(self, user: UserRegisterSchema) -> str:
         """Регистрация пользователя."""
         try:
             new_user = AuthUserModel(**user.model_dump())
@@ -33,7 +33,7 @@ class AuthService:
             )
         return str(new_user.auth_user_id)
 
-    async def login(self, user: UserRegister) -> str:
+    async def login(self, user: UserRegisterSchema) -> str:
         """Вход пользователя в систему."""
         stmt = select(AuthUserModel).where(AuthUserModel.email == user.email)
         result = await self.session.execute(stmt)
@@ -46,7 +46,7 @@ class AuthService:
         self.__validate_user(auth_user, user)
         return str(auth_user.auth_user_id)
 
-    def __validate_user(self, auth_user: AuthUserModel, user: UserRegister) -> None:
+    def __validate_user(self, auth_user: AuthUserModel, user: UserRegisterSchema) -> None:
         """Проверка пользователя при входе."""
         if not auth_user.check_user_hash_password(user.password):
             raise HTTPException(
