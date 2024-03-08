@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from pydantic import Field
-
 from .base_schema import BaseSchema
 
 
@@ -34,5 +32,4 @@ class SetUserRoleSchema(BaseSchema):
 class UserRolesSchema(BaseSchema):
     """Схема для ролей пользователя."""
 
-    user_id: UUID = Field(validation_alias='auth_user_id')
-    roles: list[RolesSchema]
+    roles: list[str]

@@ -14,6 +14,8 @@ from schemas import UserRegisterSchema
 from schemas import UserRestorePasswordSchema
 from services.auth_service import AuthService
 from services.auth_service import get_auth_service
+from services.role_service import RoleService
+from services.role_service import get_role_service
 from services.user_session_service import UserSessionService
 from services.user_session_service import get_user_session_service
 
@@ -37,12 +39,18 @@ async def login(
     Authorize: AuthJWT = Depends(),
     auth_service: AuthService = Depends(get_auth_service),
     user_session_service: UserSessionService = Depends(get_user_session_service),
+    role_service: RoleService = Depends(get_role_service),
 ) -> TokenSchema:
     """Аутентифицация пользователя."""
     user_id = await auth_service.login(user)
     await user_session_service.logging_start_session(user_id, user_agent, request)
+    user_roles = await role_service.user_roles(user_id)
     refresh_token = await Authorize.create_refresh_token(subject=user_id)
-    access_token = await Authorize.create_access_token(subject=user_id)
+    # TODO: добавить эндпоинт, что бы можно было добавлять разные еще usert_claims
+    access_token = await Authorize.create_access_token(
+        subject=user_id,
+        user_claims=user_roles.model_dump(),
+    )
     await Authorize.set_access_cookies(access_token)
     await Authorize.set_refresh_cookies(refresh_token)
     return TokenSchema(access_token=access_token, refresh_token=refresh_token)

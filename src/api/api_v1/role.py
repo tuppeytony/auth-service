@@ -82,7 +82,7 @@ async def delete_role(
     Authorize: AuthJWT = Depends(),
 ) -> dict:
     """Удаление роли."""
-    await Authorize.jwt_required()
+    await Authorize.fresh_jwt_required()
     await role_service.delete_role(role_id)
     return {'status': 'ok'}
 
@@ -116,7 +116,7 @@ async def set_user_role(
     Authorize: AuthJWT = Depends(),
 ) -> dict:
     """Добавление роли пользователю."""
-    await Authorize.jwt_required()
+    await Authorize.fresh_jwt_required()
     await role_service.set_user_role(user_role)
     return {'status': 'ok'}
 
@@ -125,13 +125,13 @@ async def set_user_role(
     '/user-roles/{user_id}',
     description='Просмотр назначенных ролей пользователю',
     summary='Просмотр назначенных ролей пользователю',
-    response_model=list[UserRolesSchema],
+    response_model=UserRolesSchema,
 )
 async def user_roles(
     user_id: Annotated[UUID, Path(description='id пользователя')],
     Authorize: AuthJWT = Depends(),
     role_service: RoleService = Depends(get_role_service),
-) -> list[UserRolesSchema]:
+) -> UserRolesSchema:
     """Получение ролей пользователя."""
     Authorize.jwt_required()
     user_roles = await role_service.user_roles(user_id)

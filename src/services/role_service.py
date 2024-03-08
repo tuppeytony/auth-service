@@ -12,9 +12,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql import func
 
 from db.postgres import get_session
 from models import AuthUserModel
+from models import RoleAuthUserAssociation
 from models import RoleModel
 from schemas import CreateRoleSchema
 from schemas import RolesSchema
@@ -96,16 +98,18 @@ class RoleService:
         await self.session.execute(stmp)
         await self.session.commit()
 
-    async def user_roles(self, user_id: UUID) -> list[UserRolesSchema]:
+    async def user_roles(self, user_id: UUID) -> UserRolesSchema:
         """Получение ролей пользователя."""
-        stmp = select(AuthUserModel).options(
-            selectinload(AuthUserModel.roles),
-        ).where(
-            AuthUserModel.auth_user_id == user_id,
-        ).order_by(AuthUserModel.auth_user_id)
+        stmp = select(
+            func.array_agg(RoleModel.role_name).label('roles'),
+        ).join(
+            RoleAuthUserAssociation,
+        ).join(
+            AuthUserModel,
+        ).where(AuthUserModel.auth_user_id == user_id)
         result = await self.session.execute(stmp)
-        user_roles = result.scalars().all()
-        return [UserRolesSchema.model_validate(i) for i in user_roles]
+        user_roles = result.scalar()
+        return UserRolesSchema(roles=user_roles)
 
     # TODO: доразобраться с логикой добавления ролей
     async def set_user_role(self, user_role: SetUserRoleSchema) -> None:
