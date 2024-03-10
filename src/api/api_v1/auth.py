@@ -12,12 +12,12 @@ from schemas import TokenSchema
 from schemas import UserLoginSchema
 from schemas import UserRegisterSchema
 from schemas import UserRestorePasswordSchema
-from services.auth_service import AuthService
-from services.auth_service import get_auth_service
-from services.role_service import RoleService
-from services.role_service import get_role_service
-from services.user_session_service import UserSessionService
-from services.user_session_service import get_user_session_service
+from services import AuthService
+from services import RoleService
+from services import UserSessionService
+from services import get_auth_service
+from services import get_role_service
+from services import get_user_session_service
 
 
 router = APIRouter(tags=['Аутентификация и регистрация'], prefix=app_settings.api_prefix_url)

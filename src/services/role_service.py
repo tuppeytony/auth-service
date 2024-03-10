@@ -23,7 +23,7 @@ from schemas import RolesSchema
 from schemas import SetUserRoleSchema
 from schemas import UpdateRoleSchema
 from schemas import UserRolesSchema
-from utils.pagination import Paginator
+from utils import Paginator
 
 
 class RoleService:

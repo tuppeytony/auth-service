@@ -12,9 +12,9 @@ from schemas import RolesSchema
 from schemas import SetUserRoleSchema
 from schemas import UpdateRoleSchema
 from schemas import UserRolesSchema
-from services.role_service import RoleService
-from services.role_service import get_role_service
-from utils.pagination import Paginator
+from services import RoleService
+from services import get_role_service
+from utils import Paginator
 
 
 router = APIRouter(prefix=app_settings.api_prefix_url, tags=['Роли'])

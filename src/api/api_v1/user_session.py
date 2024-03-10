@@ -9,9 +9,9 @@ from fastapi import Query
 
 from core.config import app_settings
 from schemas import UserSessionSchema
-from services.user_session_service import UserSessionService
-from services.user_session_service import get_user_session_service
-from utils.pagination import Paginator
+from services import UserSessionService
+from services import get_user_session_service
+from utils import Paginator
 
 
 router = APIRouter(tags=['Сессии пользователей'], prefix=app_settings.api_prefix_url)
