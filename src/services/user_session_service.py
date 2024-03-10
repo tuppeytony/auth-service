@@ -11,7 +11,7 @@ from db.postgres import get_session
 from models import AuthUserModel
 from models import UserSessionModel
 from schemas import UserSessionSchema
-from utils.pagination import Paginator
+from utils import Paginator
 
 
 class UserSessionService:
