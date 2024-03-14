@@ -10,8 +10,14 @@ __all__ = (
     'UpdateRoleSchema',
     'SetUserRoleSchema',
     'UserRolesSchema',
+    'ClaimSchema',
+    'CreateClaimSchema',
+    'UpdateClaimSchema',
 )
 from .base_schema import BaseSchema
+from .claims import ClaimSchema
+from .claims import CreateClaimSchema
+from .claims import UpdateClaimSchema
 from .role import CreateRoleSchema
 from .role import RolesSchema
 from .role import SetUserRoleSchema
