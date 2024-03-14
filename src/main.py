@@ -12,6 +12,7 @@ from sqlalchemy.orm import sessionmaker
 
 from api import healthcheck
 from api.api_v1 import auth
+from api.api_v1 import claim
 from api.api_v1 import role
 from api.api_v1 import user_session
 from core.config import app_settings
@@ -49,6 +50,7 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException) -> ORJSON
 app.include_router(auth.router)
 app.include_router(user_session.router)
 app.include_router(role.router)
+app.include_router(claim.router)
 
 app.include_router(healthcheck.router)
 

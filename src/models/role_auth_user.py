@@ -22,5 +22,5 @@ class RoleAuthUserAssociation(Base):
         primary_key=True,
         default=uuid4,
     )
-    auth_user_id: Mapped[UUID] = mapped_column(ForeignKey('auth_user.auth_user_id'))
+    auth_user_id: Mapped[UUID] = mapped_column(ForeignKey('auth_user.auth_user_id', ondelete='CASCADE'))
     role_id: Mapped[UUID] = mapped_column(ForeignKey('role.role_id'))
