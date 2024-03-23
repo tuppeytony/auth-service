@@ -75,6 +75,7 @@ class RoleService:
                 RoleModel,
             ).where(
                 RoleModel.role_id == role_id,
+                RoleModel.role_name != RoleModel.admin_role,
             ).values(**updated_role.model_dump()).returning(RoleModel)
             result = await self.session.execute(stmp)
             updated_role = result.scalar_one()
@@ -94,7 +95,10 @@ class RoleService:
 
     async def delete_role(self, role_id: UUID) -> None:
         """Удаление роли."""
-        stmp = delete(RoleModel).where(RoleModel.role_id == role_id)
+        stmp = delete(RoleModel).where(
+            RoleModel.role_id == role_id,
+            RoleModel.role_name != RoleModel.admin_role,
+        )
         await self.session.execute(stmp)
         await self.session.commit()
 
@@ -128,6 +132,7 @@ class RoleService:
         if user_role.roles_id:
             roles_stmp = select(RoleModel).where(
                 RoleModel.role_id.in_(user_role.roles_id),
+                RoleModel.role_name != RoleModel.admin_role,
             )
             roles_result = await self.session.execute(roles_stmp)
             roles = roles_result.scalars().all()

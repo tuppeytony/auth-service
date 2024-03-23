@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from pydantic import Field
+
 from .base_schema import BaseSchema
 
 
@@ -13,7 +15,7 @@ class RolesSchema(BaseSchema):
 class CreateRoleSchema(BaseSchema):
     """Схема для создания ролей."""
 
-    role_name: str
+    role_name: str = Field(max_length=100)
 
 
 class UpdateRoleSchema(CreateRoleSchema):
