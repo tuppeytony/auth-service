@@ -44,7 +44,7 @@ class AuthUserModel(Base):
     # при связях M2M и использовании другой схемы, нужно ее явно прописывать в secondary
     roles: Mapped[list['RoleModel']] = relationship(
         secondary='auth_service.role_auth_user_association',
-        back_populates='user',
+        back_populates='users',
     )
 
     def check_user_hash_password(self, password: str) -> bool:

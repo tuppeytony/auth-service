@@ -33,3 +33,8 @@
 
 - запустить сборку docker-compose
     - `docker-compose -p auth-service-demo -f ./ci/demo/docker-compose.yaml --env-file ./ci/demo/demo-db.env up -d`
+
+### Создание учетной записи для администратора
+
+- Нужно добавить переменные окружения
+    - `admin_email` и `admin_password`

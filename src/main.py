@@ -17,6 +17,7 @@ from api.api_v1 import role
 from api.api_v1 import user_session
 from core.config import app_settings
 from db import postgres
+from utils import CreateAdmin
 
 
 @asynccontextmanager
@@ -25,6 +26,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:  # noqa: U100
     postgres.async_session = sessionmaker(
         postgres.engine, class_=AsyncSession, expire_on_commit=False,
     )
+    await CreateAdmin(postgres.async_session).create_admin()
     yield
 
 

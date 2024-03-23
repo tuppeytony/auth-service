@@ -19,6 +19,8 @@ class RoleModel(Base):
 
     __tablename__ = 'role'
 
+    admin_role = 'ADMIN'
+
     def __init__(self, role_name: str):
         self.role_name = role_name.upper()
 
@@ -29,7 +31,7 @@ class RoleModel(Base):
     )
     role_name: Mapped[str] = mapped_column(String(100), unique=True)
     # при связях M2M и использовании другой схемы, нужно ее явно прописывать в secondary
-    user: Mapped[list['AuthUserModel']] = relationship(
+    users: Mapped[list['AuthUserModel']] = relationship(
         secondary='auth_service.role_auth_user_association',
         back_populates='roles',
     )
