@@ -12,3 +12,10 @@ services:
       - .env.auth-db
     volumes:
       - ../../db_schema.sql:/docker-entrypoint-initdb.d/db_schema.sql
+
+  auth-redis:
+    container_name: "auth-redis"
+    image: redis:7.2
+    restart: always
+    ports:
+      - "6379:6379"

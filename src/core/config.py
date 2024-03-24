@@ -43,6 +43,15 @@ class DataBaseSettings(BaseSettings):
     driver: str = ...
 
 
+class CacheSettings(BaseSettings):
+    """Настройки для кэша."""
+
+    model_config = SettingsConfigDict(case_sensitive=False, env_prefix='CACHE_')
+
+    host: str = ...
+    port: int = ...
+
+
 class AuthJWTSettings(BaseSettings):
     """Конфигурация для токенов."""
 
@@ -74,5 +83,12 @@ def get_app_settings() -> AppSettings:
     return AppSettings()
 
 
+@lru_cache
+def get_cache_settings() -> CacheSettings:
+    """Получение настроек кэша."""
+    return CacheSettings()
+
+
 db_settings = get_db_settings()
 app_settings = get_app_settings()
+cache_settings = get_cache_settings()
