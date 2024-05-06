@@ -11,6 +11,7 @@ from schemas import ClaimSchema
 from schemas import CreateClaimSchema
 from schemas import UpdateClaimSchema
 from services import ClaimService
+from services import get_auth_jwt_bearer
 from services import get_claim_service
 
 
@@ -25,7 +26,7 @@ router = APIRouter(prefix=app_settings.api_prefix_url, tags=['Добавлени
 )
 async def retrive_user_claims(
     user_id: Annotated[UUID, Path(description='id пользователя')],
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     claim_service: ClaimService = Depends(get_claim_service),
 ) -> list[ClaimSchema]:
     """Получение свойтв пользователя."""
@@ -42,7 +43,7 @@ async def retrive_user_claims(
 )
 async def add_to_user_claim(
     new_claim: CreateClaimSchema,
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     claim_service: ClaimService = Depends(get_claim_service),
 ) -> ClaimSchema:
     """Добавление свойства для пользователя."""
@@ -60,7 +61,7 @@ async def add_to_user_claim(
 async def update_user_claims(
     user_id: Annotated[UUID, Path(description='id пользователя')],
     updated_claim: UpdateClaimSchema,
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     claim_service: ClaimService = Depends(get_claim_service),
 ) -> UpdateClaimSchema:
     """Обновление свойства пользователя."""
@@ -77,7 +78,7 @@ async def update_user_claims(
 async def delete_user_claims(
     user_id: Annotated[UUID, Path(description='id пользователя')],
     claim_id: UUID,
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     claim_service: ClaimService = Depends(get_claim_service),
 ) -> dict[str, str]:
     """Удаление свойства пользователя."""

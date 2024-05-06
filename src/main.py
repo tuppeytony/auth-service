@@ -3,10 +3,12 @@ from typing import AsyncGenerator
 
 import uvicorn
 
+from aredis_om import Migrator
 from async_fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import ORJSONResponse
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -16,7 +18,9 @@ from api.api_v1 import claim
 from api.api_v1 import role
 from api.api_v1 import user_session
 from core.config import app_settings
+from core.config import cache_settings
 from db import postgres
+from db import redis
 from utils import CreateAdmin
 
 
@@ -26,6 +30,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:  # noqa: U100
     postgres.async_session = sessionmaker(
         postgres.engine, class_=AsyncSession, expire_on_commit=False,
     )
+    redis.redis = Redis(**cache_settings.model_dump(exclude_none=True))
+    await Migrator().run()
     await CreateAdmin(postgres.async_session).create_admin()
     yield
 

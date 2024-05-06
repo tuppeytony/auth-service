@@ -32,6 +32,8 @@ services:
     depends_on:
       auth-db-demo:
         condition: service_healthy
+      auth-redis:
+        condition: service_healthy
 
   nginx-demo:
     image: nginx:latest
@@ -47,3 +49,15 @@ services:
         condition: service_healthy
       auth-sevice-demo:
         condition: service_healthy
+      auth-redis:
+        condition: service_healthy
+
+  auth-redis:
+    container_name: "auth-redis"
+    image: redis/redis-stack-server:latest
+    restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5

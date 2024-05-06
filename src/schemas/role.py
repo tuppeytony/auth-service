@@ -34,4 +34,4 @@ class SetUserRoleSchema(BaseSchema):
 class UserRolesSchema(BaseSchema):
     """Схема для ролей пользователя."""
 
-    roles: list[str]
+    roles: list[str] | None

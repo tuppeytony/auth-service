@@ -7,7 +7,9 @@ __all__ = (
     'get_user_session_service',
     'ClaimService',
     'get_claim_service',
+    'get_auth_jwt_bearer',
 )
+from .auth_jwt import get_auth_jwt_bearer
 from .auth_service import AuthService
 from .auth_service import get_auth_service
 from .claim_service import ClaimService

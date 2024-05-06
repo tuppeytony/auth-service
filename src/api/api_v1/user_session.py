@@ -10,6 +10,7 @@ from fastapi import Query
 from core.config import app_settings
 from schemas import UserSessionSchema
 from services import UserSessionService
+from services import get_auth_jwt_bearer
 from services import get_user_session_service
 from utils import Paginator
 
@@ -25,7 +26,7 @@ router = APIRouter(tags=['Сессии пользователей'], prefix=app_
 )
 async def users_activities(
     user_session_service: UserSessionService = Depends(get_user_session_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     pagination: Paginator = Depends(Paginator),
     ordering: Annotated[str, Query(description='Сортировка пользователей')] = 'email',
 ) -> list[UserSessionSchema]:
@@ -43,7 +44,7 @@ async def users_activities(
 )
 async def user_activities(
     user_id: Annotated[UUID, Path(description='id пользователя')],
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     user_session_service: UserSessionService = Depends(get_user_session_service),
     pagination: Paginator = Depends(Paginator),
     ordering: Annotated[str, Query(description='Сортировка пользователей')] = 'email',
