@@ -13,6 +13,7 @@ from schemas import SetUserRoleSchema
 from schemas import UpdateRoleSchema
 from schemas import UserRolesSchema
 from services import RoleService
+from services import get_auth_jwt_bearer
 from services import get_role_service
 from utils import Paginator
 
@@ -28,7 +29,7 @@ router = APIRouter(prefix=app_settings.api_prefix_url, tags=['Роли'])
 )
 async def roles(
     role_service: RoleService = Depends(get_role_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     pagination: Paginator = Depends(Paginator),
 ) -> list[RolesSchema]:
     """Получе ролей."""
@@ -46,7 +47,7 @@ async def roles(
 async def retrive_role(
     role_id: Annotated[UUID, Path(description='id роли')],
     role_service: RoleService = Depends(get_role_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
 ) -> RolesSchema:
     """Получение роли."""
     await Authorize.jwt_required()
@@ -63,7 +64,7 @@ async def retrive_role(
 async def create_role(
     role: CreateRoleSchema,
     role_service: RoleService = Depends(get_role_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
 ) -> RolesSchema:
     """Создание роли."""
     await Authorize.jwt_required()
@@ -79,7 +80,7 @@ async def create_role(
 async def delete_role(
     role_id: Annotated[UUID, Path(description='id пользователя')],
     role_service: RoleService = Depends(get_role_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
 ) -> dict:
     """Удаление роли."""
     await Authorize.fresh_jwt_required()
@@ -97,7 +98,7 @@ async def update_role(
     role_id: Annotated[UUID, Path(description='id роли')],
     role: UpdateRoleSchema,
     role_service: RoleService = Depends(get_role_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
 ) -> RolesSchema:
     """изменение роли."""
     await Authorize.jwt_required()
@@ -113,7 +114,7 @@ async def update_role(
 async def set_user_role(
     user_role: SetUserRoleSchema,
     role_service: RoleService = Depends(get_role_service),
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
 ) -> dict:
     """Добавление роли пользователю."""
     await Authorize.fresh_jwt_required()
@@ -129,7 +130,7 @@ async def set_user_role(
 )
 async def user_roles(
     user_id: Annotated[UUID, Path(description='id пользователя')],
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     role_service: RoleService = Depends(get_role_service),
 ) -> UserRolesSchema:
     """Получение ролей пользователя."""

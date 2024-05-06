@@ -15,7 +15,8 @@ services:
 
   auth-redis:
     container_name: "auth-redis"
-    image: redis:7.2
+    image: redis/redis-stack:latest
     restart: always
     ports:
       - "6379:6379"
+      - "8001:8001"

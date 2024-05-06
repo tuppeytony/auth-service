@@ -37,4 +37,4 @@
 ### Создание учетной записи для администратора
 
 - Нужно добавить переменные окружения
-    - `admin_email` и `admin_password`
+    - `ADMIN_EMAIL` и `ADMIN_PASSWORD`

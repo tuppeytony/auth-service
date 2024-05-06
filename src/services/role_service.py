@@ -38,7 +38,7 @@ class RoleService:
             RoleModel.role_id,
             RoleModel.role_name,
         ).order_by(RoleModel.role_name).limit(pagination.limit).offset(pagination.offset)
-        result = await self.session.scalars(stmp)
+        result = await self.session.execute(stmp)
         return [RolesSchema.model_validate(role) for role in result.all()]
 
     async def get_role_by_id(self, role_id: UUID) -> RolesSchema:

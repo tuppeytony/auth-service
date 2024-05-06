@@ -15,6 +15,7 @@ from schemas import UserRestorePasswordSchema
 from services import AuthService
 from services import RoleService
 from services import UserSessionService
+from services import get_auth_jwt_bearer
 from services import get_auth_service
 from services import get_role_service
 from services import get_user_session_service
@@ -36,7 +37,7 @@ async def login(
         examples=['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                   'Chrome/122.0.0.0 Safari/537.36'],
     )] = None,
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     auth_service: AuthService = Depends(get_auth_service),
     user_session_service: UserSessionService = Depends(get_user_session_service),
     role_service: RoleService = Depends(get_role_service),
@@ -70,15 +71,20 @@ async def registration(
         examples=['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                   'Chrome/122.0.0.0 Safari/537.36'],
     )] = None,
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     auth_service: AuthService = Depends(get_auth_service),
     user_session_service: UserSessionService = Depends(get_user_session_service),
+    role_service: RoleService = Depends(get_role_service),
 ) -> TokenSchema:
     """Регистрация пользователя."""
     user_id = await auth_service.register(user)
     await user_session_service.logging_start_session(user_id, user_agent, request)
     refresh_token = await Authorize.create_refresh_token(subject=user_id)
-    access_token = await Authorize.create_access_token(subject=user_id)
+    user_roles = await role_service.user_roles(user_id)
+    access_token = await Authorize.create_access_token(
+        subject=user_id,
+        user_claims=user_roles.model_dump(),
+    )
     await Authorize.set_access_cookies(access_token)
     await Authorize.set_refresh_cookies(refresh_token)
     return TokenSchema(access_token=access_token, refresh_token=refresh_token)
@@ -91,12 +97,17 @@ async def registration(
     response_model=TokenSchema,
 )
 async def refresh_token(
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
+    role_service: RoleService = Depends(get_role_service),
 ) -> TokenSchema:
     """Обновление токена."""
     await Authorize.jwt_refresh_token_required()
     current_user = await Authorize.get_jwt_subject()
-    new_access_token = await Authorize.create_access_token(subject=current_user)
+    user_roles = await role_service.user_roles(current_user)
+    new_access_token = await Authorize.create_access_token(
+        subject=current_user,
+        user_claims=user_roles.model_dump(),
+    )
     new_refresh_token = await Authorize.create_refresh_token(subject=current_user)
     await Authorize.set_access_cookies(new_access_token)
     return TokenSchema(access_token=new_access_token, refresh_token=new_refresh_token)
@@ -108,14 +119,15 @@ async def refresh_token(
     summary='Выход из приложения',
 )
 async def logout(
-    Authorize: AuthJWT = Depends(),
+    Authorize: AuthJWT = Depends(get_auth_jwt_bearer),
     user_session_service: UserSessionService = Depends(get_user_session_service),
-) -> None:
+) -> dict:
     """Логаут пользователя."""
     await Authorize.jwt_required()
     user_id = await Authorize.get_jwt_subject()
     await user_session_service.logging_end_session(user_id)
     await Authorize.unset_jwt_cookies()
+    return {'status': 'ok'}
 
 
 @router.post(

@@ -3,6 +3,7 @@ from typing import AsyncGenerator
 
 import uvicorn
 
+from aredis_om import Migrator
 from async_fastapi_jwt_auth.exceptions import AuthJWTException
 from fastapi import FastAPI
 from fastapi import Request
@@ -29,7 +30,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:  # noqa: U100
     postgres.async_session = sessionmaker(
         postgres.engine, class_=AsyncSession, expire_on_commit=False,
     )
-    redis.redis = Redis(**cache_settings.model_dump())
+    redis.redis = Redis(**cache_settings.model_dump(exclude_none=True))
+    await Migrator().run()
     await CreateAdmin(postgres.async_session).create_admin()
     yield
 
