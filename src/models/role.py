@@ -20,6 +20,7 @@ class RoleModel(Base):
     __tablename__ = 'role'
 
     admin_role = 'ADMIN'
+    pk = 'role_id'
 
     def __init__(self, role_name: str):
         self.role_name = role_name.upper()

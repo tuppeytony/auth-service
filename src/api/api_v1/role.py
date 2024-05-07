@@ -34,7 +34,7 @@ async def roles(
 ) -> list[RolesSchema]:
     """Получе ролей."""
     await Authorize.jwt_required()
-    roles = await role_service.get_all_roles(pagination)
+    roles = await role_service.get_all(pagination, ('role_name', ))
     return roles
 
 
@@ -51,7 +51,7 @@ async def retrive_role(
 ) -> RolesSchema:
     """Получение роли."""
     await Authorize.jwt_required()
-    role = await role_service.get_role_by_id(role_id)
+    role = await role_service.get_one(role_id)
     return role
 
 
@@ -68,7 +68,7 @@ async def create_role(
 ) -> RolesSchema:
     """Создание роли."""
     await Authorize.jwt_required()
-    new_role = await role_service.create_role(role)
+    new_role = await role_service.create(role)
     return new_role
 
 
@@ -84,7 +84,7 @@ async def delete_role(
 ) -> dict:
     """Удаление роли."""
     await Authorize.fresh_jwt_required()
-    await role_service.delete_role(role_id)
+    await role_service.delete(role_id)
     return {'status': 'ok'}
 
 
@@ -102,7 +102,7 @@ async def update_role(
 ) -> RolesSchema:
     """изменение роли."""
     await Authorize.jwt_required()
-    updated_role = await role_service.update_role(role_id, role)
+    updated_role = await role_service.update(role_id, role)
     return updated_role
 
 

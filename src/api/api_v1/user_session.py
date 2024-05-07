@@ -32,7 +32,7 @@ async def users_activities(
 ) -> list[UserSessionSchema]:
     """Список активностей пользователей."""
     await Authorize.jwt_required()
-    users_activities = await user_session_service.users_activities(pagination, ordering)
+    users_activities = await user_session_service.users_activities(pagination, (ordering, ))
     return users_activities
 
 
@@ -51,5 +51,5 @@ async def user_activities(
 ) -> list[UserSessionSchema]:
     """Активность пользователя."""
     await Authorize.jwt_required()
-    user_activities = await user_session_service.user_activities(pagination, ordering, user_id)
+    user_activities = await user_session_service.user_activities(pagination, (ordering, ), user_id)
     return user_activities

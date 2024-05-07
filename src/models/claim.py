@@ -14,6 +14,7 @@ class ClaimModel(Base):
     """Модель свойств."""
 
     __tablename__ = 'claim'
+    pk = 'claim_id'
 
     claim_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
