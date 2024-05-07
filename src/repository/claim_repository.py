@@ -25,7 +25,7 @@ class ClaimRepository(BaseRepository, CreateRepositoryMixin):
 
     async def get_user_claims(self, user_id: UUID) -> Any:
         """Получение свойств пользователя."""
-        stmp = select(self.model).where(ClaimModel.user_id == user_id)
+        stmp = select(self.model).where(self.model.user_id == user_id)
         result = await self.session.execute(stmp)
         return result.scalars().all()
 
@@ -51,9 +51,9 @@ class ClaimRepository(BaseRepository, CreateRepositoryMixin):
 
     async def delete_user_claim(self, user_id: UUID, claim_id: UUID) -> None:
         """Удаление свойства пользователя."""
-        stmp = delete(ClaimModel).where(
-            ClaimModel.user_id == user_id,
-            ClaimModel.claim_id == claim_id,
+        stmp = delete(self.model).where(
+            self.model.user_id == user_id,
+            self.model.claim_id == claim_id,
         )
         await self.session.execute(stmp)
         await self.session.commit()
