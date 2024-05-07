@@ -25,8 +25,10 @@ from schemas import UpdateRoleSchema
 from schemas import UserRolesSchema
 from utils import Paginator
 
+from .base_service import BaseService
 
-class RoleService:
+
+class RoleService(BaseService):
     """Сервис для ролей."""
 
     def __init__(self, session: AsyncSession):
