@@ -1,3 +1,4 @@
+# mypy: disable-error-code="attr-defined"
 from abc import ABC
 from abc import abstractmethod
 from typing import Sequence
@@ -11,7 +12,7 @@ from utils.consts import PrimaryKey
 class BaseService:
     """интерфейс для сервисов."""
 
-    read_schema: BaseSchema = None
+    schema: BaseSchema = None
     pagination: Paginator = None
 
     def __init__(self, repository: BaseRepository):
@@ -86,43 +87,68 @@ class BaseCrudService(
     pass
 
 
-class CrudService(BaseCrudService):
-    """CRUD сервис."""
+class ListService(BaseListService):
+    """Получение списка элементов."""
 
     async def get_all(self, pagination: Paginator, ordering: Sequence[str]) -> list[BaseSchema]:
         """Получение списка элементов."""
         result = await self.repository.list_data(pagination.limit, pagination.offset, ordering)
-        return [self.read_schema.model_validate(i) for i in result]
+        return [self.schema.model_validate(i) for i in result]
+
+
+class RetriveService(BaseRetriveService):
+    """Получение элемента по первичному ключу."""
 
     async def get_one(self, pk: PrimaryKey) -> BaseSchema:
         """Получение по первичному ключу."""
         result = await self.repository.retrive(pk)
-        return self.read_schema.model_validate(result)
+        return self.schema.model_validate(result)
+
+
+class CreateService(BaseCreateService):
+    """Сервис создания."""
 
     async def create(self, creation_data: BaseSchema) -> BaseSchema:
         """Создание."""
         result = await self.repository.create(creation_data.model_dump())
-        return self.read_schema.model_validate(result)
+        return self.schema.model_validate(result)
+
+
+class UpdateService(BaseUpdateService):
+    """Сервис обновления данных."""
 
     async def update(self, pk: PrimaryKey, update_data: BaseSchema) -> BaseSchema:
         """Обновление."""
         result = await self.repository.update(pk, update_data.model_dump())
-        return self.read_schema.model_validate(result)
+        return self.schema.model_validate(result)
+
+
+class DeleteService(BaseDeleteService):
+    """Сервис удаления данных."""
 
     async def delete(self, pk: PrimaryKey) -> None:
         """Удаление."""
         await self.repository.delete(pk)
 
 
-class ReadService(BaseReadService):
+class CrudService(
+    BaseService,
+    ListService,
+    RetriveService,
+    CreateService,
+    UpdateService,
+    DeleteService,
+):
+    """CRUD сервис."""
+
+    pass
+
+
+class ReadService(
+    BaseService,
+    RetriveService,
+    ListService,
+):
     """Сервис для чтения."""
 
-    async def get_all(self, pagination: Paginator, ordering: Sequence[str]) -> list[BaseSchema]:
-        """Получение списка элементов."""
-        result = await self.repository.list_data(pagination.limit, pagination.offset, ordering)
-        return [self.read_schema.model_validate(i) for i in result]
-
-    async def get_one(self, pk: PrimaryKey) -> BaseSchema:
-        """Получение по первичному ключу."""
-        result = await self.repository.retrive(pk)
-        return self.read_schema.model_validate(result)
+    pass

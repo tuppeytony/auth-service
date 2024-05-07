@@ -80,7 +80,7 @@ class RetriveRepositoryMixin(BaseRetriveRepository):
 
     async def retrive(self, pk: PrimaryKey) -> Any | None:
         """Получение записи из БД по первичному ключу."""
-        stmp = select(self.model).where(self.model.pk == pk)
+        stmp = select(self.model).where(getattr(self.model, self.model.pk) == pk)
         result = await self.session.execute(stmp)
         return result.scalar_one_or_none()
 
@@ -97,7 +97,7 @@ class ListRepositoryMixin(BaseListRepository):
         """Получение данных с ограничением по количеству записей, оффсета и с сортирокой из БД."""
         stmp = select(self.model).order_by(*order_by).limit(limit).offset(offset)
         result = await self.session.execute(stmp)
-        return result.all()
+        return result.scalars().all()
 
 
 class CreateRepositoryMixin(BaseCreateRepository):

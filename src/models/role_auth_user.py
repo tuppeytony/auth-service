@@ -16,6 +16,7 @@ class RoleAuthUserAssociation(Base):
     __table_args__ = (
         UniqueConstraint('auth_user_id', 'role_id', name='idx_unique_auth_user_id_role_id'),
     )
+    pk = 'role_auth_user_association_id'
 
     role_auth_user_association_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),

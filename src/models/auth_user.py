@@ -24,6 +24,7 @@ class AuthUserModel(Base):
     """Таблица аутентификационного пользователя."""
 
     __tablename__ = 'auth_user'
+    pk = 'auth_user_id'
 
     def __init__(self, email: str, password: str, user_enabled: bool = True, is_email_confirmed: bool = False):
         self.email = email

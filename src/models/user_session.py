@@ -16,6 +16,7 @@ class UserSessionModel(Base):
     """Модель сессий пользователя."""
 
     __tablename__ = 'user_session'
+    pk = 'session_id'
 
     def __init__(
         self,
