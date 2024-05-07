@@ -3,7 +3,6 @@ from abc import ABC
 from abc import abstractmethod
 from typing import Any
 from typing import Sequence
-from uuid import UUID
 
 from fastapi import HTTPException
 from fastapi import status
@@ -14,11 +13,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from utils.consts import PrimaryKey
 
-PrimaryKey = UUID | str | int
 
-
-class BaseRepositoryMixin:
+class BaseRepository:
     """Базовый миксин для репозитория."""
 
     model: Any = None
@@ -155,7 +153,7 @@ class DeleteRepositoryMixin(BaseDeleteRepository):
 
 
 class CrudRepository(
-    BaseRepositoryMixin,
+    BaseRepository,
     CreateRepositoryMixin,
     RetriveRepositoryMixin,
     UpdateRepositoryMixin,
@@ -168,7 +166,7 @@ class CrudRepository(
 
 
 class ReadOnlyRepository(
-    BaseRepositoryMixin,
+    BaseRepository,
     RetriveRepositoryMixin,
     ListRepositoryMixin,
 ):
