@@ -7,7 +7,11 @@ __all__ = (
     'get_claim_repo',
     'UserSessionRepository',
     'get_user_session_repo',
+    'AuthRepository',
+    'get_auth_repo',
 )
+from .auth_repository import AuthRepository
+from .auth_repository import get_auth_repo
 from .base_repository import BaseRepository
 from .base_repository import CrudRepository
 from .claim_repository import ClaimRepository
