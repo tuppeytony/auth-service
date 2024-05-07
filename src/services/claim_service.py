@@ -2,73 +2,43 @@ from functools import lru_cache
 from uuid import UUID
 
 from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import status
-from sqlalchemy import delete
-from sqlalchemy import select
-from sqlalchemy import update
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.postgres import get_session
-from models import ClaimModel
+from repository import BaseRepository
+from repository import get_claim_repo
 from schemas import ClaimSchema
-from schemas import CreateClaimSchema
 from schemas import UpdateClaimSchema
 
+from .base_service import BaseService
+from .base_service import CreateService
 
-class ClaimService:
+
+class ClaimService(BaseService, CreateService):
     """Сервис свойств пользователя."""
 
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
-    async def create_claim(self, claim: CreateClaimSchema) -> ClaimSchema:
-        """Создание свойства."""
-        new_claim = ClaimModel(**claim.model_dump())
-        self.session.add(new_claim)
-        await self.session.commit()
-        await self.session.refresh(new_claim)
-        return ClaimSchema.model_validate(new_claim)
+    schema = ClaimSchema
 
     async def get_user_claims(self, user_id: UUID) -> list[ClaimSchema]:
         """Получение свойств пользователя."""
-        stmp = select(ClaimModel).where(ClaimModel.user_id == user_id)
-        result = await self.session.execute(stmp)
-        user_claims = result.scalars().all()
-        return [ClaimSchema.model_validate(claim) for claim in user_claims]
+        user_claims = await self.repository.get_user_claims(user_id)
+        return [self.schema.model_validate(claim) for claim in user_claims]
 
     async def update_user_claim(self, user_id: UUID, update_claim: UpdateClaimSchema) -> UpdateClaimSchema:
         """Обновление свойства пользователя."""
-        try:
-            stmp = update(ClaimModel).where(
-                ClaimModel.user_id == user_id,
-                ClaimModel.claim_id == update_claim.claim_id,
-            ).values(
-                **update_claim.model_dump(exclude={'claim_id', 'user_id'}),
-            ).returning(ClaimModel)
-            result = await self.session.execute(stmp)
-            await self.session.commit()
-            updated_claim = result.scalar_one()
-        except NoResultFound:
-            await self.session.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Такого свойства у пользователя нет',
-            )
+        updated_claim = await self.repository.update_user_claim(
+            user_id,
+            update_claim.claim_id,
+            update_claim.model_dump(exclude={'claim_id', 'user_id'}),
+        )
         return UpdateClaimSchema.model_validate(updated_claim)
 
     async def delete_user_claim(self, user_id: UUID, claim_id: UUID) -> None:
         """Удаление свойства пользователя."""
-        stmp = delete(ClaimModel).where(
-            ClaimModel.user_id == user_id,
-            ClaimModel.claim_id == claim_id,
-        )
-        await self.session.execute(stmp)
-        await self.session.commit()
+        await self.repository.delete_user_claim(user_id, claim_id)
 
 
 @lru_cache
-def get_claim_service(session: AsyncSession = Depends(get_session)) -> ClaimService:
+def get_claim_service(
+    repository: BaseRepository = Depends(get_claim_repo),
+) -> ClaimService:
     """Получение сервиса свойств пользователя."""
-    return ClaimService(session)
+    return ClaimService(repository)

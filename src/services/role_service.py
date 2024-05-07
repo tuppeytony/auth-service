@@ -24,7 +24,6 @@ class RoleService(
         user_roles = await self.repository.user_roles(user_id)
         return UserRolesSchema(roles=user_roles)
 
-    # TODO: доразобраться с логикой добавления ролей
     async def set_user_role(self, user_role: SetUserRoleSchema) -> None:
         """Установка ролей пользователю."""
         await self.repository.set_user_role(user_role)

@@ -76,6 +76,7 @@ class RolesRepository(CrudRepository):
         result = await self.session.execute(stmp)
         return result.scalar()
 
+    # TODO: доразобраться с логикой добавления ролей
     async def set_user_role(self, user_role: SetUserRoleSchema) -> None:
         """Установка ролей пользователю."""
         roles: list | Sequence[RoleModel] = []

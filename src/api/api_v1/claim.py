@@ -48,7 +48,7 @@ async def add_to_user_claim(
 ) -> ClaimSchema:
     """Добавление свойства для пользователя."""
     await Authorize.jwt_required()
-    new_claim = await claim_service.create_claim(new_claim)
+    new_claim = await claim_service.create(new_claim)
     return new_claim
 
 
