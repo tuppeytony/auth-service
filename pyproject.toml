@@ -11,7 +11,7 @@ python-dotenv = {extras = ["cli"], version = "1.0.1"}
 uvicorn = "0.27.0"
 gunicorn = "21.2.0"
 alembic = "1.13.1"
-psycopg2 = "2.9.9"
+psycopg2-binary = "2.9.9"
 asyncpg = "0.29.0"
 pydantic = {version = "<2.5.0", extras = ["email"]}
 pydantic-settings = "2.2.1"
@@ -65,3 +65,4 @@ pytest-cov = "4.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+package-mode = false
