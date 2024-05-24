@@ -1,4 +1,4 @@
-default_install_hook_types: [pre-commit, post-checkout]
+default_install_hook_types: [pre-commit, post-checkout, pre-push]
 
 repos:
 -   repo: local
@@ -52,10 +52,12 @@ repos:
     -   id: pytest
         name: running tests
         description: pytest testing
-        entry: pytest
-        language: python
+        entry: poetry run pytest
+        language: system
         types: [python]
         args: ["-v"]
+        always_run: true
+        stages: [pre-push]
 
 -   repo: https://github.com/python-poetry/poetry
     rev: '1.8.1'
