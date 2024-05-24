@@ -155,3 +155,4 @@ cython_debug/
 .vscode
 nginx.env
 .env.auth-db
+.DS_Store
