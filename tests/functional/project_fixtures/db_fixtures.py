@@ -76,18 +76,16 @@ def db_engine() -> AsyncEngine:
 @pytest_asyncio.fixture(autouse=True, scope='session')
 async def _prepare_db(create_db: Container, db_engine: AsyncEngine) -> AsyncGenerator:
     """Подготовка БД для тестов."""
-    try:
-        async with db_engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        async with AsyncSession(db_engine) as session:
-            async with session.begin():
-                session.add_all([AuthUserModel(**user) for user in database_data])  # type: ignore[arg-type]
-            await session.commit()
-        await db_engine.dispose()
-        yield
-    finally:
-        create_db.stop()
-        create_db.remove()
+    async with db_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    async with AsyncSession(db_engine) as session:
+        async with session.begin():
+            session.add_all([AuthUserModel(**user) for user in database_data])  # type: ignore[arg-type]
+        await session.commit()
+    await db_engine.dispose()
+    yield
+    create_db.stop()
+    create_db.remove()
 
 
 @pytest_asyncio.fixture(scope='session')
