@@ -10,6 +10,7 @@ repos:
         entry: autoflake
         language: python
         types: [python]
+        stages: [pre-commit]
         args: ["--remove-all-unused-imports", "--remove-unused-variables"]
 
     -   id: autopep8
@@ -19,6 +20,7 @@ repos:
         language: python
         types: [python]
         args: ["--in-place"]
+        stages: [pre-commit]
 
     -   id: isort
         name: isort
@@ -26,6 +28,7 @@ repos:
         entry: isort
         language: python
         types: [python]
+        stages: [pre-commit]
 
     -   id: flake8
         name: flake8
@@ -33,6 +36,7 @@ repos:
         entry: flake8
         language: python
         types: [python]
+        stages: [pre-commit]
 
     -   id: mypy
         name: mypy
@@ -40,6 +44,7 @@ repos:
         entry: mypy
         language: python
         types: [python]
+        stages: [pre-commit]
 
     -   id: bandit
         name: bandit
@@ -48,6 +53,7 @@ repos:
         language: python
         types: [python]
         args: ["-c", "bandit.yaml", "-r", "."]
+        stages: [pre-commit]
 
     -   id: pytest
         name: running tests
