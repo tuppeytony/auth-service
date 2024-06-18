@@ -12,6 +12,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.postgres import get_session
+from models import AuthUserModel
 from models import ClaimModel
 
 from .base_repository import BaseRepository
@@ -57,6 +58,16 @@ class ClaimRepository(BaseRepository, CreateRepositoryMixin):
         )
         await self.session.execute(stmp)
         await self.session.commit()
+
+    async def create(self, creation_data: dict) -> Any:
+        """Создание записи в свойства пользователя."""
+        user = await self.session.get(AuthUserModel, creation_data['user_id'])
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='Такого пользователя не существует',
+            )
+        return await super().create(creation_data)
 
 
 @lru_cache

@@ -1,8 +1,8 @@
 """start_app
 
-Revision ID: eeff8a0c1a67
+Revision ID: 88e720a13a21
 Revises: 
-Create Date: 2024-03-13 20:49:36.441411
+Create Date: 2024-06-18 22:12:40.783461
 
 """
 from typing import Sequence
@@ -14,7 +14,7 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'eeff8a0c1a67'
+revision: str = '88e720a13a21'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -47,6 +47,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.UUID(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['auth_service.auth_user.auth_user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('claim_id'),
+    sa.UniqueConstraint('claim_name', 'user_id', name='idx_unique_user_id_claim_name'),
     schema='auth_service'
     )
     op.create_table('role_auth_user_association',
@@ -64,7 +65,7 @@ def upgrade() -> None:
     sa.Column('login_time', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('logout_time', sa.DateTime(), nullable=True),
     sa.Column('auth_user_id', sa.UUID(), nullable=False),
-    sa.Column('user_agent', sa.String(length=400), nullable=True),
+    sa.Column('user_agent', sa.String(length=200), nullable=True),
     sa.Column('ip_address', sa.String(length=15), nullable=True),
     sa.ForeignKeyConstraint(['auth_user_id'], ['auth_service.auth_user.auth_user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('session_id'),

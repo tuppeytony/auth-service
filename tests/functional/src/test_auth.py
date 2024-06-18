@@ -40,6 +40,10 @@ from tests.functional.testdata.database_mapping import database_data
             },
 
         ),
+        (
+            {'email': 'test222@mail.ru', 'password': '111'},
+            {'status': HTTPStatus.UNPROCESSABLE_ENTITY},
+        ),
     ],
 )
 @pytest.mark.asyncio()
@@ -108,7 +112,7 @@ async def test_refresh(
     """Тесты для обновления токена."""
     _, status_code = await request_api_post('/refresh', request_data)
     if request_data:
-        refresh_response = await authenticated_http_client.post(f'{tests_settings.service_api_url}/refresh')
+        refresh_response = await authenticated_http_client.post('/refresh')
         status_code = refresh_response.status_code
     assert expected_answer['status'] == status_code
 

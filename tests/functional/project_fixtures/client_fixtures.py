@@ -34,6 +34,7 @@ async def authenticated_http_client() -> AsyncGenerator[AsyncClient, None]:
             await auth_client.aclose()
         async with AsyncClient(
             cookies=login_reques.cookies,
+            base_url=tests_settings.service_api_url,
             transport=ASGITransport(app),  # type: ignore[arg-type]
         ) as client:
             yield client

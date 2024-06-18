@@ -9,6 +9,7 @@ import pytest
 import pytest_asyncio
 
 from docker.models.containers import Container
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio.engine import AsyncEngine
@@ -75,12 +76,28 @@ def db_engine() -> AsyncEngine:
 @pytest_asyncio.fixture(autouse=True, scope='session')
 async def _prepare_db(create_db: Container, db_engine: AsyncEngine) -> AsyncGenerator:
     """Подготовка БД для тестов."""
-    async with db_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    async with AsyncSession(db_engine) as session:
-        async with session.begin():
-            session.add_all([AuthUserModel(**user) for user in database_data])  # type: ignore[arg-type]
-        await session.commit()
-    yield
-    create_db.stop()
-    create_db.remove()
+    try:
+        async with db_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        async with AsyncSession(db_engine) as session:
+            async with session.begin():
+                session.add_all([AuthUserModel(**user) for user in database_data])  # type: ignore[arg-type]
+            await session.commit()
+        await db_engine.dispose()
+        yield
+    finally:
+        create_db.stop()
+        create_db.remove()
+
+
+@pytest_asyncio.fixture(scope='session')
+async def get_user_by_email(db_engine: AsyncEngine) -> Any:
+    """Фикстура для получения пользователя по email."""
+    async def inner(user_email: str) -> Any:
+        async with AsyncSession(db_engine) as session:
+            stmp = select(AuthUserModel).where(AuthUserModel.email == user_email)
+            result = await session.execute(stmp)
+            user = result.scalars().one()
+        await db_engine.dispose()
+        return user
+    return inner

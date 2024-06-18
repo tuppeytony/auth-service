@@ -1,4 +1,5 @@
 from pydantic import EmailStr
+from pydantic import Field
 
 from .base_schema import BaseSchema
 
@@ -7,7 +8,7 @@ class UserLoginSchema(BaseSchema):
     """Сущность для аутентификации пользователя."""
 
     email: EmailStr
-    password: str
+    password: str = Field(min_length=4)
 
 
 class UserRegisterSchema(UserLoginSchema):
