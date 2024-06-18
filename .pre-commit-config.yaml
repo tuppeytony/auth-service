@@ -69,6 +69,8 @@ repos:
     rev: '1.8.1'
     hooks:
     -   id: poetry-check
+        stages: [pre-commit]
     -   id: poetry-lock
+        stages: [pre-commit]
     -   id: poetry-install
         stages: [post-checkout]
