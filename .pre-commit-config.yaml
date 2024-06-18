@@ -55,7 +55,7 @@ repos:
         entry: poetry run pytest
         language: system
         types: [python]
-        args: ["-v"]
+        args: ["-v", "--disable-warnings"]
         always_run: true
         stages: [pre-push]
 
